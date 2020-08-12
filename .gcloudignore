@@ -1,0 +1,8 @@
+#!include:.gitignore
+
+.gcloudignore
+.git/
+.gitignore
+node_modules/
+
+!config.production.json
