@@ -39,7 +39,13 @@ module.exports = async (req, res) => {
         req.params.idp
       ].join('/')
 
-      return res.redirect(client.getAuthUrl(redirectUrl))
+      await client.redeemCode(redirectUrl, req.query.code)
+      const user = await client.getCurrentUser()
+      const encryptedText = RSA.encrypt(JSON.stringify(user))
+      if (!encryptedText) {
+        return res.status(500).send('Could not encrypt text')
+      }
+      return res.send(encryptedText)
     })
     .catch((err) => {
       console.log('ERR:', err)
