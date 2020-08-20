@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
       // TODO use factory class to create handler
       return new GitLab(
         clientId,
-        clientSecret,
+        RSA.decrypt(clientSecret),
         discovery
       )
     })
