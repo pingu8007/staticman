@@ -63,6 +63,33 @@ const schema = {
       doc: 'Whether authentication is required for an entry to be accepted.',
       format: Boolean,
       default: false
+    },
+    providers: {
+      doc: 'An array of idp profile definitions.',
+      format: 'IdpDefinitionArray',
+      default: [],
+      idpDefinition: {
+        name: {
+          doc: 'The name of the idp profile.',
+          format: String,
+          default: null
+        },
+        clientId: {
+          doc: 'The client ID to the OAuth application used for authentication.',
+          format: String,
+          default: ''
+        },
+        clientSecret: {
+          doc: 'The client secret to the OAuth application used for authentication.',
+          format: 'EncryptedString',
+          default: ''
+        },
+        discovery: {
+          doc: 'The URL of openid configuration.',
+          format: String,
+          default: ''
+        }
+      }
     }
   },
   branch: {
@@ -214,6 +241,21 @@ module.exports = (data, rsa) => {
     validate: val => true,
     coerce: val => {
       return rsa.decrypt(val, 'utf8')
+    }
+  })
+  convict.addFormat({
+    name: 'IdpDefinitionArray',
+    validate: (sources, schema) => {
+      if (sources && !Array.isArray(sources))
+        throw new Error('must be of type Array')
+      sources.reduce((collect, source, index) => {
+        convict(schema.idpDefinition).load(source).validate()
+        if (collect.hasOwnProperty(source.name))
+          throw new Error('provider name conflicted')
+        collect[source.name] = source
+        return collect
+      }, {})
+      return true
     }
   })
 

@@ -28,6 +28,11 @@ const schema = {
       env: 'UA_TRACKING_ID'
     }
   },
+  baseUrl:{
+    doc: 'The base URL of this instance. Will be used to derive oauth redirect URL.',
+    format: String,
+    default: null
+  },
   email: {
     apiKey: {
       doc: 'Mailgun API key to be used for email notifications. Will be overridden by a `notifications.apiKey` parameter in the site config, if one is set.',
