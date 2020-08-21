@@ -11,7 +11,6 @@ class StaticmanAPI {
       connect: require('./controllers/connect'),
       encrypt: require('./controllers/encrypt'),
       authInit: require('./controllers/authInit'),
-      authRedeem: require('./controllers/authRedeem'),
       auth: require('./controllers/auth'),
       handlePR: require('./controllers/handlePR'),
       home: require('./controllers/home'),
@@ -98,22 +97,13 @@ class StaticmanAPI {
       this.controllers.auth
     )
 
-    // Route: redirect to oauth
+    // Route: oauth
     this.server.get(
-      '/v:version/auth/init/:service/:username/:repository/:branch/:property/:idp',
+      '/v:version/auth/:service/:username/:repository/:branch/:property/:idp',
       this.bruteforce.prevent,
       this.requireApiVersion([3]),
       this.requireService(['github', 'gitlab']),
       this.controllers.authInit
-    )
-
-    // Route: redirect from oauth
-    this.server.get(
-      '/v:version/auth/cb/:service/:username/:repository/:branch/:property/:idp',
-      this.bruteforce.prevent,
-      this.requireApiVersion([3]),
-      this.requireService(['github', 'gitlab']),
-      this.controllers.authRedeem
     )
 
     // Route: root
