@@ -3,7 +3,7 @@
 const config = require('../config')
 const RSA = require('../lib/RSA')
 const Staticman = require('../lib/Staticman')
-const GitLab = require('../lib/idpProvider/GitLab')
+const Client = require('../lib/idpProvider/GitLab')
 
 module.exports = async (req, res) => {
   const staticman = await new Staticman(req.params)
@@ -15,28 +15,21 @@ module.exports = async (req, res) => {
       const {
         clientId,
         clientSecret,
-        discovery
+        discovery,
+        mappings
       } = siteConfig.get('auth.providers').find(val => val.name == req.params.idp) || {}
 
       // TODO use factory class to create handler
-      return new GitLab(
+      // GeneralOIDC should throw error if mappings is undefined
+      return new Client(
         clientId,
         RSA.decrypt(clientSecret),
-        discovery
+        discovery,
+        mappings
       )
     })
     .then(async client => {
-      const redirectUrl = [
-        config.get('baseUrl').replace(/\/$/, ''),
-        `v${req.params.version}`,
-        'auth',
-        req.params.service,
-        req.params.username,
-        req.params.repository,
-        req.params.branch,
-        req.params.property,
-        req.params.idp
-      ].join('/')
+      const redirectUrl = config.get('baseUrl').replace(/\/$/, '') + req.path
 
       if (!req.query.code) {
         return res.redirect(client.getAuthUrl(redirectUrl))

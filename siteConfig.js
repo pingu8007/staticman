@@ -6,14 +6,14 @@ const schema = {
   allowedFields: {
     doc: 'An array with the names of the allowed fields. If any of the fields sent is not part of this list, the entry will be discarded and an error will be thrown.',
     docExample: 'allowedFields: ["name", "email", "message"]',
-    format: Array,
+    format: 'StringArray',
     default: []
   },
   allowedOrigins: {
     doc: 'When allowedOrigins is defined, only requests sent from one of the domains listed will be accepted.',
     docExample: 'allowedOrigins: ["localhost", "eduardoboucas.com"]',
     default: [],
-    format: Array
+    format: 'StringArray'
   },
   akismet: {
     enabled: {
@@ -88,6 +88,25 @@ const schema = {
           doc: 'The URL of openid configuration.',
           format: String,
           default: ''
+        },
+        mappings: {
+          doc: 'The URL of openid configuration.',
+          format: 'FieldMappingArray',
+          default: [],
+          fieldMapping: {
+            type: {
+              format: ['path', 'static'],
+              default: 'path',
+            },
+            field: {
+              format: ['username', 'email', 'name', 'avatarUrl', 'bio', 'siteUrl', 'organisation'],
+              default: null
+            },
+            value: {
+              format: String,
+              default: null
+            }
+          }
         }
       }
     }
@@ -207,7 +226,7 @@ const schema = {
   },
   requiredFields: {
     doc: 'An array with the names of the fields that must be supplies as part of an entry. If any of these is not present, the entry will be discarded and an error will be thrown.',
-    format: Array,
+    format: 'StringArray',
     default: []
   },
   transforms: {
@@ -244,6 +263,14 @@ module.exports = (data, rsa) => {
     }
   })
   convict.addFormat({
+    name: 'StringArray',
+    validate: (sources, schema) => {
+      if (sources && !Array.isArray(sources))
+        throw new Error('must be of type Array')
+      return sources.every(val => typeof val === 'string')
+    }
+  })
+  convict.addFormat({
     name: 'IdpDefinitionArray',
     validate: (sources, schema) => {
       if (sources && !Array.isArray(sources))
@@ -255,6 +282,17 @@ module.exports = (data, rsa) => {
         collect[source.name] = source
         return collect
       }, {})
+      return true
+    }
+  })
+  convict.addFormat({
+    name: 'FieldMappingArray',
+    validate: (sources, schema) => {
+      if (sources && !Array.isArray(sources))
+        throw new Error('must be of type Array')
+      sources.forEach(source => {
+        convict(schema.fieldMapping).load(source).validate()
+      })
       return true
     }
   })
