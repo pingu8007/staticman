@@ -3,7 +3,7 @@
 const config = require('../config')
 const RSA = require('../lib/RSA')
 const Staticman = require('../lib/Staticman')
-const Client = require('../lib/idpProvider/GitLab')
+const factory = require('../lib/idpProvider/IdpServiceFactory')
 
 module.exports = async (req, res) => {
   const staticman = await new Staticman(req.params)
@@ -21,12 +21,12 @@ module.exports = async (req, res) => {
 
       // TODO use factory class to create handler
       // GeneralOIDC should throw error if mappings is undefined
-      return new Client(
+      return factory.get(req.params.idp, {
         clientId,
-        RSA.decrypt(clientSecret),
+        clientSecret: RSA.decrypt(clientSecret),
         discovery,
         mappings
-      )
+      })
     })
     .then(async client => {
       const redirectUrl = config.get('baseUrl').replace(/\/$/, '') + req.path
