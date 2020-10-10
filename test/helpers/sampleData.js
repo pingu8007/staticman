@@ -1,3 +1,6 @@
+/**
+ * Valid siteConfig
+ */
 module.exports.config1 = `# Name of the property. You can have multiple properties with completely
 # different config blocks for different sections of your site.
 # For example, you can have one property to handle comment submission and
@@ -81,6 +84,9 @@ comments:
     clientSecret: "1zzjCrOZQ9dVs1p/WLgT8Lvwez3EKd1tp3D+7P5uGlEdqP1RN7kQvcaqOmOpm5SIY6g+yKJQGZq9G/IqUoKdsZDhA2VGYGXVzETU6eB48AL0OXlFumhjzJoGAXpnqDWzfevglkVuAkivBv6o9S1r/FL1GydwlRwWcYU6NNJjjkB04A00B4s0J7FRR3VFRxpJqDznHgXgT32E2+F3s6enh9/aErqi9uqn+iVtw7gvbd9PN1ejlo95R3BVNKUxNi2Dn4BbsH3MjQG4DyuzX8BiS9Nb+Xt+CwLygTT/i4C5Aj+KkMjAEiYOyttFbk3jkvYVXJ1XtW+taloBVPYCHgDzmg=="
     redirectUri: "https://my-test-site-2.com"`
 
+/**
+ * Valid siteConfig, written in JSON format
+ */
 module.exports.config2 = `{
   "comments": {
     "allowedFields": [
@@ -126,6 +132,11 @@ module.exports.config2 = `{
   }
 }`
 
+/**
+ * Malformed siteConfig with invalid mapping entry
+ * 
+ * `:` is missing at comments.generatedFields.date.type
+ */
 module.exports.config3 = `comments:
   allowedFields: ["name", "email", "url", "message"]
   allowedOrigins: ["localhost", "eduardoboucas.com"]
@@ -150,6 +161,81 @@ module.exports.config3 = `comments:
     siteKey: "123456789"
     secret: "@reCaptchaSecret@"`
 
+/**
+ * Valid siteConfig, with custom auth provider
+ */
+module.exports.customProvider = `comments:
+  allowedFields: ["name", "email", "url", "message"]
+  allowedOrigins: ["localhost", "eduardoboucas.com"]
+  auth:
+    required: true
+    providers:
+      - name: "google"
+        clientId: "@OAuthAppClientId@"
+        clientSecret: "@OAuthAppClientSecret@"
+      - name: "gitlab"
+        clientId: "@OAuthAppClientId@"
+        clientSecret: "@OAuthAppClientSecret@"
+  branch: "master"
+  format: "yaml"
+  moderation: false
+  name: "eduardoboucas.com"
+  notifications:
+    enabled: true
+  path: "_data/comments/{options.slug}"
+  filename: "entry{@timestamp}"
+  requiredFields: ["name", "email", "message"]`
+
+/**
+ * Malformed siteConfig with duplicated auth provider name
+ * 
+ * Multiple auth providers with identical name `gitlab`
+ */
+module.exports.duplicatedProviders = `comments:
+  allowedFields: ["name", "email", "url", "message"]
+  allowedOrigins: ["localhost", "eduardoboucas.com"]
+  auth:
+    required: true
+    providers:
+      - name: "gitlab"
+        clientId: "@OAuthAppClientId@"
+        clientSecret: "@OAuthAppClientSecret@"
+      - name: "gitlab"
+        clientId: "@OAuthAppClientId@"
+        clientSecret: "@OAuthAppClientSecret@"
+        discovery: "https://gitlab.example.com/.well-known/openid-configuration"
+  branch: "master"
+  format: "yaml"
+  moderation: false
+  name: "eduardoboucas.com"
+  notifications:
+    enabled: true
+  path: "_data/comments/{options.slug}"
+  filename: "entry{@timestamp}"
+  requiredFields: ["name", "email", "message"]`
+
+/**
+ * Malformed siteConfig with providers as string
+ */
+module.exports.providerAsString = `comments:
+  allowedFields: ["name", "email", "url", "message"]
+  allowedOrigins: ["localhost", "eduardoboucas.com"]
+  auth:
+    required: true
+    providers: "google"
+  branch: "master"
+  format: "yaml"
+  moderation: false
+  name: "eduardoboucas.com"
+  notifications:
+    enabled: true
+  path: "_data/comments/{options.slug}"
+  filename: "entry{@timestamp}"
+  requiredFields: ["name", "email", "message"]`
+
+/**
+ * Malformed siteConfig with invalid YML contents
+ */
 module.exports.configInvalidYML = `invalid:
 - x
 y
