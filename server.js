@@ -4,6 +4,7 @@ const express = require('express')
 const ExpressBrute = require('express-brute')
 const GithubWebHook = require('express-github-webhook')
 const objectPath = require('object-path')
+const tl = require('express-tl')
 
 class StaticmanAPI {
   constructor () {
@@ -23,6 +24,10 @@ class StaticmanAPI {
       extended: true
       // type: '*'
     }))
+
+    this.server.engine('tl', tl)
+    this.server.set('views', './views')
+    this.server.set('view engine', 'tl')
 
     this.initialiseWebhookHandler()
     this.initialiseCORS()

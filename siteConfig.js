@@ -64,6 +64,16 @@ const schema = {
       format: Boolean,
       default: false
     },
+    responseMethod: {
+      doc: 'How should acquired userinfo be responsed.',
+      format: ['plain', 'json', 'jsonp', 'postMessage'],
+      default: 'postMessage'
+    },
+    responseTarget: {
+      doc: 'Target origin, required when using postMessage method.',
+      format: String,
+      default: null
+    },
     providers: {
       doc: 'An array of idp profile definitions.',
       format: 'IdpDefinitionArray',
