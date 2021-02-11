@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
 
         switch (siteConfig.get('auth.responseMethod')) {
           case 'postMessage':
-            resData.raw = JSON.stringify(resData)
+            resData.raw = 'staticman|authdata|' + JSON.stringify(resData)
 
             let target = siteConfig.get('auth.responseTarget')
             if (!!target) resData.target = target

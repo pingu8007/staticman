@@ -70,9 +70,9 @@ const schema = {
       default: 'postMessage'
     },
     responseTarget: {
-      doc: 'Target origin, required when using postMessage method.',
+      doc: 'Target origin when using postMessage method. Use default should be fine since all data are encrypted.',
       format: String,
-      default: null
+      default: '*'
     },
     providers: {
       doc: 'An array of idp profile definitions.',
